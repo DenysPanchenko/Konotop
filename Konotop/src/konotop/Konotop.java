@@ -369,6 +369,7 @@ public class Konotop extends JFrame implements ActionListener, ComponentListener
                for(Rule r : al){
                    resultList.add(r.toString());
                }
+               resultList.add("\n");
            }
        }
        if("delete".equals(e.getActionCommand())){
