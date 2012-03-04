@@ -51,4 +51,15 @@ public class Rule {
     }
     
     private Pair<String, ArrayList<String>> m_rule;
+    
+    @Override
+    public String toString(){
+        String left_part = m_rule.getFirst();
+        StringBuilder right_part = new StringBuilder();
+        for(String s : m_rule.getSecond())
+            right_part.append(s);
+        if(m_rule.getSecond().isEmpty())
+            System.out.println("Empty");
+        return new String(left_part + "->" + right_part.toString());
+    }
 }
