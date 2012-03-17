@@ -69,6 +69,16 @@ public class Konotop extends JFrame implements ActionListener, ComponentListener
         item.setActionCommand("derivation");
         item.addActionListener(this);
         menu.add(item);
+        //my changes begin
+        item = new JMenuItem("FirstK");
+        item.setActionCommand("firstk");
+        item.addActionListener(this);
+        menu.add(item);
+        item = new JMenuItem("FollowK");
+        item.setActionCommand("followk");
+        item.addActionListener(this);
+        menu.add(item);
+        // my changes end
         
         mainMenu.add(menu);
         
@@ -378,6 +388,28 @@ public class Konotop extends JFrame implements ActionListener, ComponentListener
        if("add".equals(e.getActionCommand())){
            
        }
+       // my changes begin
+       if("firstk".equals(e.getActionCommand())){
+           resultList.clear();
+           resultList.add("FirstK table is:");
+           for(String nt: gram.GetNonTerminals()){
+               resultList.add(nt);
+               for(ArrayList<String> a : gram.First(2,nt)){ // need changes
+                   resultList.add(a.toString());
+               }
+            }
+       }
+       if("followk".equals(e.getActionCommand())){
+           resultList.clear();
+           resultList.add("FollowK table is:");
+           for(String nt: gram.GetNonTerminals()){
+               resultList.add(nt);
+               for(ArrayList<String> a : gram.Follow(1,nt)){ // need changes
+                   resultList.add(a.toString());
+               }
+            }
+       }
+       //my changes end
     }
     
     public static void main(String[] args) {

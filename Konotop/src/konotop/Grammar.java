@@ -16,6 +16,146 @@ public class Grammar {
         m_rules = new HashSet<Rule>();
         minLen = Integer.MAX_VALUE;
         cyrcles = new HashSet<ArrayList<String>>();
+        m_lastFirstK=-1;
+        m_lastFollowK=-1;
+    }
+    
+    public HashSet<ArrayList<String>> First(int k, String a){
+       
+        if(m_lastFirstK==k && m_allFirstK!=null){
+            return m_allFirstK.get(a);
+        }
+        
+        if(m_terminals.contains(a)){
+             HashSet<ArrayList<String>> res = new HashSet<ArrayList<String>>();
+            ArrayList<String> resList = new ArrayList<String>();
+            resList.add(a);
+            res.add(resList);
+            return res;
+        }
+        
+        HashMap<String,HashSet<ArrayList<String>>> table = new HashMap<String,HashSet<ArrayList<String>>>();
+        HashMap<String,HashSet<ArrayList<String>>> prevTable = new HashMap<String,HashSet<ArrayList<String>>>();
+        
+        for(String nt : m_nonterminals){
+            table.put(nt, new HashSet<ArrayList<String>>());
+            prevTable.put(nt, new HashSet<ArrayList<String>>());
+        }
+        for(String t : m_terminals){
+            HashSet<ArrayList<String>> set = new HashSet<ArrayList<String>>();
+            ArrayList<String> list = new ArrayList<String>();
+            list.add(t);
+            set.add(list);
+            table.put(t, set);
+            prevTable.put(t, new HashSet<ArrayList<String>>());
+        }
+        
+        while(!Helpers.tablesAreEquals(table, prevTable)){
+            prevTable = copyTable(table);
+            
+            for(Rule rule : m_rules){
+                String leftPart = rule.GetLeftPart();
+                ArrayList<String> rightPart = rule.GetRightPart();
+                HashSet<ArrayList<String>> curFirst = new HashSet<ArrayList<String>>();
+                curFirst = prevTable.get(rightPart.get(0));
+                for(int i=1;i<rightPart.size();i++){
+                    curFirst = Helpers.plusK(curFirst, prevTable.get(rightPart.get(i)), k);
+                }
+                HashSet<ArrayList<String>> m = table.get(leftPart);
+                m.addAll(curFirst);
+                table.put(leftPart, m);
+            }
+        }
+        m_allFirstK = table;
+        return table.get(a);
+    }
+    
+    public HashSet<ArrayList<String>> Follow(int k,String a){
+        //HashSet<ArrayList<String>> res = new HashSet<ArrayList<String>>();
+        
+        if(m_lastFollowK==k && m_allFollowK!=null){
+            return m_allFollowK.get(a);
+        }
+        
+        if(m_lastFirstK!=k || m_allFirstK==null){
+            First(k, a);
+        }
+        
+        HashMap<String,HashSet<ArrayList<String>>> table = new HashMap<String,HashSet<ArrayList<String>>>();
+        HashMap<String,HashSet<ArrayList<String>>> prevTable = new HashMap<String,HashSet<ArrayList<String>>>();
+        
+        for(String nt : m_nonterminals){
+            table.put(nt, new HashSet<ArrayList<String>>());
+            prevTable.put(nt, new HashSet<ArrayList<String>>());
+        }
+        
+        // begin ???
+        
+        HashSet<ArrayList<String>> beginTerminalSet = table.get(m_begin_terminal);
+        ArrayList<String> beginTerminalList = new ArrayList<String>();
+        beginTerminalList.add("$"); // epsilon
+        beginTerminalSet.add(beginTerminalList);
+        table.put(m_begin_terminal, beginTerminalSet);
+        
+        for(Rule rule : m_rules){
+            String leftPart = rule.GetLeftPart();
+            ArrayList<String> rightPart = rule.GetRightPart();
+            if(leftPart.equals(m_begin_terminal)){
+                for(int i=rightPart.size()-1;i>=0;i--){
+                        String cur_symbol = rightPart.get(i);
+                        if(m_nonterminals.contains(cur_symbol)){
+                            HashSet<ArrayList<String>> curFollow = new HashSet<ArrayList<String>>();
+                            if((i+1)<rightPart.size()){
+                                curFollow = m_allFirstK.get(rightPart.get(i+1));
+                            }
+                            else{
+                                ArrayList<String> epsList = new ArrayList<String>();
+                                epsList.add("$");
+                                curFollow.add(epsList);
+                            }
+                            for(int j=i+2;j<rightPart.size();j++){
+                                curFollow = Helpers.plusK(curFollow, m_allFirstK.get(rightPart.get(j)), k);
+                            }
+                            HashSet<ArrayList<String>> m = table.get(cur_symbol);
+                            m.addAll(curFollow);
+                            table.put(cur_symbol,curFollow);
+                        }
+                    }    
+            }
+        }
+        
+        //end ??? 
+        
+        while(!Helpers.tablesAreEquals(prevTable, table)){
+            prevTable = copyTable(table);
+            for(Rule rule : m_rules){
+                String leftPart = rule.GetLeftPart();
+                ArrayList<String> rightPart = rule.GetRightPart();
+                for(int i=rightPart.size()-1;i>=0;i--){
+                    String cur_symbol = rightPart.get(i);
+                    if(m_nonterminals.contains(cur_symbol)){
+                        HashSet<ArrayList<String>> curFollow = new HashSet<ArrayList<String>>();
+                        if((i+1)<rightPart.size()){
+                            curFollow = m_allFirstK.get(rightPart.get(i+1));
+                        }
+                        else{
+                            ArrayList<String> epsList = new ArrayList<String>();
+                            epsList.add("$");
+                            curFollow.add(epsList);
+                        }
+                        for(int j=i+2;j<rightPart.size();j++){
+                            curFollow = Helpers.plusK(curFollow, m_allFirstK.get(rightPart.get(j)), k);
+                        }
+                        curFollow = Helpers.plusK(curFollow, prevTable.get(leftPart), k);
+                        HashSet<ArrayList<String>> m = table.get(cur_symbol);
+                        m.addAll(curFollow);
+                        table.put(cur_symbol,m);
+                    }
+                }
+            }
+        }
+        m_allFollowK=table;
+        return table.get(a);
     }
     
     public HashSet<ArrayList<Rule>> FindMinLeftRecursiveDerivations(){
@@ -180,9 +320,34 @@ public class Grammar {
         
     }
     
+    private HashMap<String,HashSet<ArrayList<String>>> copyTable(HashMap<String,HashSet<ArrayList<String>>> m){
+        HashMap<String,HashSet<ArrayList<String>>> res = new HashMap<String,HashSet<ArrayList<String>>>();
+        Set<String> keySet = m.keySet();
+        for(String key:keySet){
+            String new_key = new String(key);
+            HashSet<ArrayList<String>> set = m.get(key);
+            HashSet<ArrayList<String>> new_set = new HashSet<ArrayList<String>>();
+            for(ArrayList<String> array : set){
+                 ArrayList<String> new_array = new ArrayList<String>();
+                 for(String string : array){
+                     String new_string = new String(string);
+                     new_array.add(new_string);
+                 }
+                 new_set.add(new_array);
+            }
+            res.put(new_key, new_set);
+        }
+        return res;
+    }
+    
     private HashSet<ArrayList<String>> cyrcles;
     private int minLen;
    
+    private HashMap<String,HashSet<ArrayList<String>>> m_allFirstK;
+    private int m_lastFirstK;
+    private HashMap<String,HashSet<ArrayList<String>>> m_allFollowK;
+    private int m_lastFollowK;
+    
     private ArrayList<String> m_terminals;
     private ArrayList<String> m_nonterminals;
     private String m_begin_terminal;
