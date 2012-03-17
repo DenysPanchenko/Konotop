@@ -34,6 +34,6 @@ public class FFilter extends FileFilter {
     
     @Override
     public String getDescription(){
-        return "*.txt";
+        return acceptSuffix.toString();
     }
 }
