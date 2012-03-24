@@ -3,8 +3,14 @@ package konotop;
 import java.util.ArrayList;
 
 public class Rule {
+    
+    ArrayList<String> rightTerminals;
+    ArrayList<String> rightNterminals;
+    
     public Rule()
     {
+        rightTerminals = new ArrayList<String>();
+        rightNterminals = new ArrayList<String>();
         m_rule = new Pair(new String(), new ArrayList<String>());
     }
     
@@ -51,6 +57,22 @@ public class Rule {
     }
     
     private Pair<String, ArrayList<String>> m_rule;
+    
+    public ArrayList<String> GetRightNonTerminals(){
+        return rightNterminals;
+    }
+    
+    public void SetRightNonTerminals(ArrayList<String> nTerm){
+        rightNterminals = new ArrayList<String>(nTerm);
+    }
+    
+    public ArrayList<String> GetRightTerminals(){
+        return rightTerminals;
+    }
+    
+    public void SetRightTerminals(ArrayList<String> term){
+        rightTerminals = new ArrayList<String>(term);
+    }
     
     @Override
     public String toString(){

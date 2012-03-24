@@ -20,10 +20,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.DataInputStream;
-import java.io.InputStreamReader;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -67,8 +63,19 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         item.setActionCommand("useless");
         item.addActionListener(this);
         menu.add(item);
+        
         item = new JMenuItem("Derivation");
         item.setActionCommand("derivation");
+        item.addActionListener(this);
+        menu.add(item);
+        
+        item = new JMenuItem("FirstK");
+        item.setActionCommand("firstk");
+        item.addActionListener(this);
+        menu.add(item);
+        
+        item = new JMenuItem("FollowK");
+        item.setActionCommand("followk");
         item.addActionListener(this);
         menu.add(item);
 
@@ -88,9 +95,6 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         input = new JFormattedTextField(); //field for grammar rules input
 
         resultList = new List(); //text area for algorithm result visualisation
-        //resultTextArea.setEditable(false);
-        //resultTextArea.setText("The result:");
-        //resultTextArea.setLineWrap(true);
 
         addButton = new JButton("Add");
         addButton.setActionCommand("add");
@@ -152,9 +156,6 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         gram = new Grammar();
         
         parser = new FAParser();
-        
-        //String s1 = new String("    asdfsfa final\t\t\t \n\nsjdfasdf    fdsf ds f     sfd ");
-        //resultList.add(removeExtraSpaces(s1));
     }
     
     private void printGrammar(List list, Grammar gram, String title){
@@ -229,9 +230,11 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                try{
                 parser.setInputFile(bnfFile);
                 parser.parseFile();
+                gram = parser.getGrammar();
+                printGrammar(gramList, gram, "Grammar is");
                }
                catch(Exception exc){
-                   
+                   JOptionPane.showMessageDialog(rootPane, exc.toString());
                }
            }
        }
@@ -268,6 +271,49 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                if(j == index){
                    HashSet<Rule> nRules = gram.GetRules();
                    nRules.remove(r);
+                   boolean need;
+                   
+                   ArrayList<String> nnTerm = new ArrayList<String>(gram.GetNonTerminals());
+                   for(String s : r.GetRightNonTerminals()){
+                       need = false;
+                       for(Rule ru : gram.GetRules()){
+                           for(String s2 : ru.GetRightNonTerminals())
+                               if(s2.equals(s))
+                                   need = true;
+                           if(ru.GetLeftPart().equals(s))
+                               need = true;
+                       }
+                       if(!need)
+                           if(!gram.GetBeginTerminal().equals(s))                               
+                               nnTerm.remove(s);
+                   }
+                   
+                   need = false;
+                       for(Rule ru : gram.GetRules()){
+                           for(String s2 : ru.GetRightNonTerminals())
+                               if(s2.equals(r.GetLeftPart()))
+                                   need = true;
+                           if(ru.GetLeftPart().equals(r.GetLeftPart()))
+                               need = true;
+                       }
+                       if(!need)
+                           if(!gram.GetBeginTerminal().equals(r.GetLeftPart()))                               
+                               nnTerm.remove(r.GetLeftPart());
+                   
+                   gram.SetNonTerminals(nnTerm);
+                   
+                   ArrayList<String> nTerm = new ArrayList<String>(gram.GetTerminals());
+                   for(String s : r.GetRightTerminals()){
+                       need = false;
+                       for(Rule ru : gram.GetRules())
+                           for(String s2 : ru.GetRightTerminals())
+                               if(s2.equals(s))
+                                   need = true;
+                       if(!need)
+                           nTerm.remove(s);
+                   }
+                   gram.SetTerminals(nTerm);
+                   
                    gram.SetRules(nRules);
                    printGrammar(gramList, gram, "Grammar is:");
                    break;
@@ -280,8 +326,36 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            if(str.isEmpty())
                JOptionPane.showMessageDialog(this, "Input string cannot be empty!");
            else{
-               
+               try{
+                parser.parseInputString(str);
+                gram = parser.getGrammar();
+                printGrammar(gramList, gram, "Grammar is:");
+               }
+               catch(Exception exc){
+                   JOptionPane.showMessageDialog(rootPane, exc.toString());
+               }
            }
+       }
+       
+       if("firstk".equals(e.getActionCommand())){
+           resultList.clear();
+           resultList.add("FirstK table is:");
+           for(String nt: gram.GetNonTerminals()){
+               resultList.add(nt);
+               for(ArrayList<String> a : gram.First(2,nt)){ // need changes
+                   resultList.add(a.toString());
+               }
+            }
+       }
+       if("followk".equals(e.getActionCommand())){
+           resultList.clear();
+           resultList.add("FollowK table is:");
+           for(String nt: gram.GetNonTerminals()){
+               resultList.add(nt);
+               for(ArrayList<String> a : gram.Follow(1,nt)){ // need changes
+                   resultList.add(a.toString());
+               }
+            }
        }
     }
 }
