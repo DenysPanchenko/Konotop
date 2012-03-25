@@ -345,6 +345,11 @@ public class FAParser{
         return gram;
     }
     
+    public void clear(){
+        gram = new Grammar();
+        curState = 0;
+    }
+    
     public FAParser(){
         gram = new Grammar();
         states = new ArrayList<Integer>();

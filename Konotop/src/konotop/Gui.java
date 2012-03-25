@@ -81,15 +81,9 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
 
         mainMenu.add(menu);
 
-        gramListModel = new DefaultListModel(); //create list model with description of grammatic
-        gramListModel.addElement("The grammatics is:        ");
-        gramListModel.addElement(" ");
-        gramListModel.addElement(" ");
-        gramListModel.addElement(" ");
-
         gramList = new List();//(gramListModel); //create list for grammatic visualisation
         gramList.setMultipleMode(false);
-        gramList.add("Grammatic is:");
+        gramList.add("Grammar is:");
         gramList.addItemListener(this);
 
         input = new JFormattedTextField(); //field for grammar rules input
@@ -228,6 +222,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            if(returnVal == JFileChooser.APPROVE_OPTION){
                File bnfFile = fileChooser.getSelectedFile();
                try{
+                parser.clear();
                 parser.setInputFile(bnfFile);
                 parser.parseFile();
                 gram = parser.getGrammar();
@@ -338,24 +333,46 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
        }
        
        if("firstk".equals(e.getActionCommand())){
+           StringBuilder sb = new StringBuilder();
            resultList.clear();
            resultList.add("FirstK table is:");
-           for(String nt: gram.GetNonTerminals()){
-               resultList.add(nt);
-               for(ArrayList<String> a : gram.First(2,nt)){ // need changes
-                   resultList.add(a.toString());
+           String result = JOptionPane.showInputDialog(rootPane, "Input k");
+               try{
+                   int i = Integer.parseInt(result);
+                   for(String nt: gram.GetNonTerminals()){
+                        resultList.add("Non terminal " + nt);
+                            for(ArrayList<String> a : gram.First(i,nt)){ // need changes
+                                sb.delete(0, sb.length());
+                                for(String s : a)
+                                    sb.append(s);
+                                resultList.add(sb.toString());
+                            }
+                   }
                }
-            }
+               catch(Exception exc){
+                   JOptionPane.showMessageDialog(rootPane, exc.toString());
+               }
        }
        if("followk".equals(e.getActionCommand())){
+           StringBuilder sb = new StringBuilder();
            resultList.clear();
            resultList.add("FollowK table is:");
-           for(String nt: gram.GetNonTerminals()){
-               resultList.add(nt);
-               for(ArrayList<String> a : gram.Follow(1,nt)){ // need changes
-                   resultList.add(a.toString());
+           String result = JOptionPane.showInputDialog(rootPane, "Input k");
+               try{
+                   int i = Integer.parseInt(result);
+                   for(String nt: gram.GetNonTerminals()){
+                      resultList.add("Non terminal " + nt);
+                      for(ArrayList<String> a : gram.Follow(i,nt)){ // need changes
+                          sb.delete(0, sb.length());
+                          for(String s : a)
+                              sb.append(s);
+                          resultList.add(sb.toString());
+                      }
+                  } 
                }
-            }
+               catch(Exception exc){
+                   JOptionPane.showMessageDialog(rootPane, exc.toString());
+               }
        }
     }
 }
