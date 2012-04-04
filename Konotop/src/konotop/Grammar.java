@@ -219,6 +219,16 @@ public class Grammar {
         return Helpers.Difference(m_nonterminals, productive_nonterminals);
     }
     
+    public boolean IsTerminal(String i_symbol)
+    {
+        return m_terminals.contains(i_symbol);
+    }
+    
+    public boolean IsNonTerminal(String i_symbol)
+    {
+        return m_nonterminals.contains(i_symbol);
+    }
+    
     public ArrayList<String> GetTerminals()
     {
         return m_terminals;
