@@ -1,9 +1,49 @@
 package konotop;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class CParser {
+    
+    public CParser(){
+        _FormGrammar();
+        _CreateMapping();
+        _FormTable();
+        m_program = getProgramText(m_path);
+        m_tokenizer = new Tokenizer(m_program);
+    }
+    
+    private String getProgramText(String path){
+        //changes
+        return " ";
+    }
+    
+    private void _CreateMapping(){
+        m_mapping = new HashMap<String,HashSet<Rule>>();
+        HashSet<Rule> cur_rules = m_grammar.GetRules();
+        for(Rule rule : cur_rules){
+            String leftPart = rule.GetLeftPart();
+            if(m_mapping.containsKey(leftPart)){
+                m_mapping.get(leftPart).add(rule);
+            }
+            else{
+                HashSet<Rule> cur_set = new HashSet<Rule>();
+                cur_set.add(rule);
+                m_mapping.put(leftPart, cur_set);
+            }
+        }
+    }
+    
+    private void _FormTable(){
+        m_table = new HashMap<Rule,HashSet<ArrayList<String>>>();
+        HashSet<Rule> cur_rules = m_grammar.GetRules();
+        for(Rule rule : cur_rules){
+            HashSet<ArrayList<String>> set = m_grammar.RuleContext(rule);
+            m_table.put(rule, set);
+        }
+    }
+
     //Shit-code here :-)
     private void _FormGrammar()  
     {
@@ -45,5 +85,9 @@ public class CParser {
         m_grammar.SetRules(rules);
     }
     private Grammar m_grammar;
-    
+    private HashMap<String,HashSet<Rule>> m_mapping;
+    private HashMap<Rule,HashSet<ArrayList<String>>> m_table;
+    private String m_program;
+    private Tokenizer m_tokenizer;
+    private String m_path;
 }
