@@ -84,4 +84,19 @@ public class Rule {
             System.out.println("Empty");
         return new String(left_part + "->" + right_part.toString());
     }
+    
+    @Override
+    public boolean equals(Object i_obj)
+    {
+        if(i_obj == this)
+            return true;
+        
+        if(! (i_obj instanceof Rule))
+            return false;
+        
+        Rule rule = (Rule)i_obj;
+        
+        return rightTerminals.equals(rule.rightTerminals) && rightNterminals.equals(rule.rightNterminals)
+                && m_rule.equals(rule.m_rule);
+    }
 }
