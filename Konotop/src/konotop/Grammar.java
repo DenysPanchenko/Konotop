@@ -20,6 +20,22 @@ public class Grammar {
         m_lastFollowK=-1;
     }
     
+    public HashSet<ArrayList<String>> FirstChain(int k, ArrayList<String> a){
+        HashSet<ArrayList<String>> res = First(k, a.get(0));
+        
+        for(int i=1;i<a.size();i++){
+            res = Helpers.plusK(res, First(k,a.get(i)), k);
+        }
+        
+        return res;
+    }
+    
+    public HashSet<ArrayList<String>> RuleContext(Rule rule){
+        HashSet<ArrayList<String>> res = FirstChain(1, rule.GetRightPart());
+        res = Helpers.plusK(res,Follow(1, rule.GetLeftPart()), 1);
+        return res;
+    }
+    
     public HashSet<ArrayList<String>> First(int k, String a){
        
         if(m_lastFirstK==k && m_allFirstK!=null){
