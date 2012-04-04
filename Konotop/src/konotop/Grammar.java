@@ -30,10 +30,16 @@ public class Grammar {
         return res;
     }
     
-    public HashSet<ArrayList<String>> RuleContext(Rule rule){
+    //K == 1!!!!!!!!!!!
+    public HashSet<String> RuleContext(Rule rule){
         HashSet<ArrayList<String>> res = FirstChain(1, rule.GetRightPart());
         res = Helpers.plusK(res,Follow(1, rule.GetLeftPart()), 1);
-        return res;
+        HashSet<String> unique_res = new HashSet<String>();
+        for(ArrayList<String> chain : res)
+        {
+            unique_res.add(chain.get(0));
+        }
+        return unique_res;
     }
     
     public HashSet<ArrayList<String>> First(int k, String a){

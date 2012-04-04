@@ -10,8 +10,49 @@ public class CParser {
         _FormGrammar();
         _CreateMapping();
         _FormTable();
-        m_program = programText;
-        m_tokenizer = new Tokenizer(m_program);
+        m_tokenizer = new Tokenizer(programText);
+    }
+    
+    public boolean Parse()
+    {
+        m_token = m_tokenizer.getNextToken();
+        return _Prog();
+    }
+    
+    private boolean _Prog()
+    {
+        HashSet<Rule> prog_rules = m_mapping.get("Prog");
+        Rule rule = new Rule();
+        for(Rule cur_rule : prog_rules)
+        {
+            HashSet<String> cur_set = m_table.get(cur_rule);
+            if(cur_set.contains(m_token.value))
+            {
+                rule = cur_rule;
+                break;
+            }
+        }
+        if(rule.equals(new Rule()))
+            return false;
+        
+        ArrayList<String> right_part = rule.GetRightPart();
+        for(String symbol : right_part)
+        {
+            if(m_grammar.)
+        }
+    }
+    
+    private boolean _Body()
+    {
+    }
+    
+    
+    private boolean _Expression()
+    {
+    }
+    
+    private boolean _Operator()
+    {
     }
     
     private void _CreateMapping(){
@@ -31,10 +72,10 @@ public class CParser {
     }
     
     private void _FormTable(){
-        m_table = new HashMap<Rule,HashSet<ArrayList<String>>>();
+        m_table = new HashMap<Rule,HashSet<String>>();
         HashSet<Rule> cur_rules = m_grammar.GetRules();
         for(Rule rule : cur_rules){
-            HashSet<ArrayList<String>> set = m_grammar.RuleContext(rule);
+            HashSet<String> set = m_grammar.RuleContext(rule);
             m_table.put(rule, set);
         }
     }
@@ -44,7 +85,7 @@ public class CParser {
     {
         m_grammar = new Grammar();
         //Begin terminal
-        m_grammar.SetBeginTerminal("P");
+        m_grammar.SetBeginTerminal("Prog");
         
         //Non terminals
         ArrayList<String> non_terminals = new ArrayList<String>();
@@ -54,7 +95,8 @@ public class CParser {
         
         //Terminals
         ArrayList<String> terminals = new ArrayList<String>();
-        terminals.add("int main()"); terminals.add("{"); terminals.add("}");
+        terminals.add("int"); terminals.add("main"); terminals.add("(");
+        terminals.add(")"); terminals.add("{"); terminals.add("}");
         terminals.add(";"); terminals.add("$"); terminals.add("var");
         terminals.add("="); terminals.add("number");
         m_grammar.SetTerminals(terminals);
@@ -62,18 +104,21 @@ public class CParser {
         //Rules
         HashSet<Rule> rules = new HashSet<Rule>();
         ArrayList<String> right_part = new ArrayList<String>();
-        right_part.add("int main()");
+        right_part.add("int");
+        right_part.add("main");
+        right_part.add("(");
+        right_part.add(")");
         right_part.add("Body");
         Rule rule = new Rule("P", right_part);
         rules.add(rule); right_part.clear();
         right_part.add("{"); right_part.add("Operator"); right_part.add("}");
-        rule = new Rule("B", right_part);
+        rule = new Rule("Body", right_part);
         rules.add(rule); right_part.clear();
         right_part.add("Expression"); right_part.add(";"); right_part.add("Operator");
-        rule = new Rule("O", right_part);
+        rule = new Rule("Operator", right_part);
         rules.add(rule); right_part.clear();
         right_part.add("$");
-        rule = new Rule("O", right_part);
+        rule = new Rule("Operator", right_part);
         rules.add(rule); right_part.clear();
         right_part.add("var"); right_part.add("="); right_part.add("number");
         rules.add(rule);
@@ -81,7 +126,7 @@ public class CParser {
     }
     private Grammar m_grammar;
     private HashMap<String,HashSet<Rule>> m_mapping;
-    private HashMap<Rule,HashSet<ArrayList<String>>> m_table;
-    private String m_program;
+    private HashMap<Rule,HashSet<String>> m_table;
     private Tokenizer m_tokenizer;
+    private Tokenizer.Token m_token;
 }
