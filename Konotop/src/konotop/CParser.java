@@ -10,11 +10,15 @@ public class CParser {
         _FormGrammar();
         _CreateMapping();
         _FormTable();
-        m_program = getProgramText(m_path);
+        m_program = GetProgramText(m_path);
         m_tokenizer = new Tokenizer(m_program);
     }
     
-    private String getProgramText(String path){
+    public void SetPath(String path){
+        m_path=path;
+    }
+    
+    private String GetProgramText(String path){
         //changes
         return " ";
     }
