@@ -6,21 +6,12 @@ import java.util.HashSet;
 
 public class CParser {
     
-    public CParser(){
+    public CParser(String programText){
         _FormGrammar();
         _CreateMapping();
         _FormTable();
-        m_program = GetProgramText(m_path);
+        m_program = programText;
         m_tokenizer = new Tokenizer(m_program);
-    }
-    
-    public void SetPath(String path){
-        m_path=path;
-    }
-    
-    private String GetProgramText(String path){
-        //changes
-        return " ";
     }
     
     private void _CreateMapping(){
@@ -93,5 +84,4 @@ public class CParser {
     private HashMap<Rule,HashSet<ArrayList<String>>> m_table;
     private String m_program;
     private Tokenizer m_tokenizer;
-    private String m_path;
 }
