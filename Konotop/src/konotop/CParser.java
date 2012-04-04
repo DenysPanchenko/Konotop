@@ -12,16 +12,15 @@ public class CParser {
         _FormTable();
         m_tokenizer = new Tokenizer(programText);
     }
-    
+    //todo: exclude forming grammar
     public boolean Parse()
     {
         m_token = m_tokenizer.getNextToken();
-        return _Prog();
+        return _ParseNonTerminal("Prog");
     }
     
-    private boolean _Prog()
-    {
-        HashSet<Rule> prog_rules = m_mapping.get("Prog");
+    private Rule _NextRule(String nonterm){
+        HashSet<Rule> prog_rules = m_mapping.get(nonterm);
         Rule rule = new Rule();
         for(Rule cur_rule : prog_rules)
         {
@@ -29,32 +28,48 @@ public class CParser {
             if(cur_set.contains(m_token.value))
             {
                 rule = cur_rule;
-                break;
+                return rule;
             }
         }
-        if(rule.equals(new Rule()))
-            return false;
-        
+        for(Rule ext_rule : prog_rules){
+            if(ext_rule.GetRightPart().size()==1 && ext_rule.GetRightPart().get(0).equals("$"))
+                rule = ext_rule;
+                return rule;
+        }
+        return rule;
+    } 
+    
+    private boolean _ParseRightpart(Rule rule){
         ArrayList<String> right_part = rule.GetRightPart();
         for(String symbol : right_part)
         {
-            if(m_grammar.)
+            if(m_grammar.IsTerminal(symbol)){
+                if(symbol.equals("$"))
+                    return true;
+                
+                if(symbol.equals(m_token.value))
+                    m_token = m_tokenizer.getNextToken();
+                else
+                    return false;
+            }
+            else{
+                if(!_ParseNonTerminal(symbol))
+                    return false;
+            }
         }
+        return true;
     }
     
-    private boolean _Body()
+    private boolean _ParseNonTerminal(String nonterminal)
     {
+        Rule rule = _NextRule(nonterminal);
+        if(rule.equals(new Rule())) return false;
+        if(!_ParseRightpart(rule))
+            return false;
+        
+        return true;
     }
-    
-    
-    private boolean _Expression()
-    {
-    }
-    
-    private boolean _Operator()
-    {
-    }
-    
+     
     private void _CreateMapping(){
         m_mapping = new HashMap<String,HashSet<Rule>>();
         HashSet<Rule> cur_rules = m_grammar.GetRules();
@@ -109,18 +124,23 @@ public class CParser {
         right_part.add("(");
         right_part.add(")");
         right_part.add("Body");
-        Rule rule = new Rule("P", right_part);
-        rules.add(rule); right_part.clear();
+        Rule rule = new Rule("Prog", right_part);
+        rules.add(rule); right_part = new ArrayList<String>();
+        
         right_part.add("{"); right_part.add("Operator"); right_part.add("}");
         rule = new Rule("Body", right_part);
-        rules.add(rule); right_part.clear();
+        rules.add(rule); right_part = new ArrayList<String>();
+        
         right_part.add("Expression"); right_part.add(";"); right_part.add("Operator");
         rule = new Rule("Operator", right_part);
-        rules.add(rule); right_part.clear();
+        rules.add(rule); right_part = new ArrayList<String>();
+        
         right_part.add("$");
         rule = new Rule("Operator", right_part);
-        rules.add(rule); right_part.clear();
+        rules.add(rule); right_part = new ArrayList<String>();
+        
         right_part.add("var"); right_part.add("="); right_part.add("number");
+        rule = new Rule("Expression", right_part);
         rules.add(rule);
         m_grammar.SetRules(rules);
     }

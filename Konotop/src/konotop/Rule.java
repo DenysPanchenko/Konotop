@@ -96,7 +96,6 @@ public class Rule {
         
         Rule rule = (Rule)i_obj;
         
-        return rightTerminals.equals(rule.rightTerminals) && rightNterminals.equals(rule.rightNterminals)
-                && m_rule.equals(rule.m_rule);
+        return m_rule.equals(rule.m_rule);
     }
 }
