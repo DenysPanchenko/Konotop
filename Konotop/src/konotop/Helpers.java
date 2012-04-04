@@ -35,7 +35,7 @@ public class Helpers {
                 int j=0;
                 for(int i=0;i<union.size();i++){
                     if(j>=k) break;
-                    if(union.get(i).equals("$") && (i+1)<union.size()) continue;
+                    if(union.get(i).equals(Grammar.epsilon) && (i+1)<union.size()) continue;
                     unionk.add(union.get(i));
                     j++;
                 }

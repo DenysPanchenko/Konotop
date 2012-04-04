@@ -115,7 +115,7 @@ public class Grammar {
         
         HashSet<ArrayList<String>> beginTerminalSet = table.get(m_begin_terminal);
         ArrayList<String> beginTerminalList = new ArrayList<String>();
-        beginTerminalList.add("$"); // epsilon
+        beginTerminalList.add(Grammar.epsilon); // epsilon
         beginTerminalSet.add(beginTerminalList);
         table.put(m_begin_terminal, beginTerminalSet);
         
@@ -132,7 +132,7 @@ public class Grammar {
                             }
                             else{
                                 ArrayList<String> epsList = new ArrayList<String>();
-                                epsList.add("$");
+                                epsList.add(Grammar.epsilon);
                                 curFollow.add(epsList);
                             }
                             for(int j=i+2;j<rightPart.size();j++){
@@ -162,7 +162,7 @@ public class Grammar {
                         }
                         else{
                             ArrayList<String> epsList = new ArrayList<String>();
-                            epsList.add("$");
+                            epsList.add(Grammar.epsilon);
                             curFollow.add(epsList);
                         }
                         for(int j=i+2;j<rightPart.size();j++){
@@ -371,6 +371,7 @@ public class Grammar {
         }
         return res;
     }
+    public static String epsilon = "$";
     
     private HashSet<ArrayList<String>> cyrcles;
     private int minLen;

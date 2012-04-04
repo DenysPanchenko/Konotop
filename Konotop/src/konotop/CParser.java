@@ -13,10 +13,11 @@ public class CParser {
         m_tokenizer = new Tokenizer(programText);
     }
     //todo: exclude forming grammar
+    
     public boolean Parse()
     {
         m_token = m_tokenizer.getNextToken();
-        return _ParseNonTerminal("Prog");
+        return _ParseNonTerminal(m_grammar.GetBeginTerminal());
     }
     
     private Rule _NextRule(String nonterm){
@@ -32,7 +33,7 @@ public class CParser {
             }
         }
         for(Rule ext_rule : prog_rules){
-            if(ext_rule.GetRightPart().size()==1 && ext_rule.GetRightPart().get(0).equals("$"))
+            if(ext_rule.GetRightPart().size()==1 && ext_rule.GetRightPart().get(0).equals(Grammar.epsilon))
                 rule = ext_rule;
                 return rule;
         }
@@ -44,7 +45,7 @@ public class CParser {
         for(String symbol : right_part)
         {
             if(m_grammar.IsTerminal(symbol)){
-                if(symbol.equals("$"))
+                if(symbol.equals(Grammar.epsilon))
                     return true;
                 
                 if(symbol.equals(m_token.value))
@@ -112,7 +113,7 @@ public class CParser {
         ArrayList<String> terminals = new ArrayList<String>();
         terminals.add("int"); terminals.add("main"); terminals.add("(");
         terminals.add(")"); terminals.add("{"); terminals.add("}");
-        terminals.add(";"); terminals.add("$"); terminals.add("var");
+        terminals.add(";"); terminals.add(Grammar.epsilon); terminals.add("var");
         terminals.add("="); terminals.add("number");
         m_grammar.SetTerminals(terminals);
         
@@ -135,7 +136,7 @@ public class CParser {
         rule = new Rule("Operator", right_part);
         rules.add(rule); right_part = new ArrayList<String>();
         
-        right_part.add("$");
+        right_part.add(Grammar.epsilon);
         rule = new Rule("Operator", right_part);
         rules.add(rule); right_part = new ArrayList<String>();
         
