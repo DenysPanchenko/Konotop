@@ -239,9 +239,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         gramP2 = new Grammar();
         
         program = new String("");
-        cParser = new CParser(program,gramP1);
-        
-        
+        cParser = new CParser(program,gramP2);
         
         parser = new FAParser();
     }
@@ -249,10 +247,20 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
     @Override
     public void stateChanged(ChangeEvent e){
         JTabbedPane tp = (JTabbedPane)e.getSource();
-        if(tp.getSelectedIndex() == 0)
+        if(tp.getSelectedIndex() == 0){
             mainMenu.getMenu(0).getItem(1).setEnabled(false);
-        if(tp.getSelectedIndex() == 1)
+            mainMenu.getMenu(1).getItem(0).setEnabled(true);
+            mainMenu.getMenu(1).getItem(1).setEnabled(true);
+            mainMenu.getMenu(1).getItem(3).setEnabled(true);
+            mainMenu.getMenu(1).getItem(4).setEnabled(true);
+        }
+        if(tp.getSelectedIndex() == 1){
             mainMenu.getMenu(0).getItem(1).setEnabled(true);
+            mainMenu.getMenu(1).getItem(0).setEnabled(false);
+            mainMenu.getMenu(1).getItem(1).setEnabled(false);
+            mainMenu.getMenu(1).getItem(3).setEnabled(false);
+            mainMenu.getMenu(1).getItem(4).setEnabled(false);
+        }
     }
     
     private void printGrammar(List list, Grammar gram, String title){
@@ -292,9 +300,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
 
     @Override
     public void componentResized(ComponentEvent e){
-        if(e.getComponent().getClass().getName().equals(this.getClass().getName())){
 
-        }
     }
 
     private void parseFile(File fileName){
@@ -406,7 +412,6 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                    HashSet<Rule> nRules = gramP1.GetRules();
                    nRules.remove(r);
                    boolean need;
-                   
                    ArrayList<String> nnTerm = new ArrayList<String>(gramP1.GetNonTerminals());
                    for(String s : r.GetRightNonTerminals()){
                        need = false;
