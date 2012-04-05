@@ -6,8 +6,9 @@ import java.util.HashSet;
 
 public class CParser {
     
-    public CParser(String programText){
-        _FormGrammar();
+    public CParser(String programText, Grammar grammar){
+        m_grammar = grammar;
+        //_FormGrammar();
         _CreateMapping();
         _FormTable();
         m_tokenizer = new Tokenizer(programText);
@@ -18,6 +19,16 @@ public class CParser {
     {
         m_token = m_tokenizer.getNextToken();
         return _ParseNonTerminal(m_grammar.GetBeginTerminal());
+    }
+    
+    void SetGrammar(Grammar i_grammar)
+    {
+        m_grammar = i_grammar;
+    }
+           
+    void SetProgramText(String i_program_text)
+    {
+        m_tokenizer.setText(i_program_text);
     }
     
     private Rule _NextRule(String nonterm){
