@@ -24,6 +24,8 @@ public class CParser {
     void SetGrammar(Grammar i_grammar)
     {
         m_grammar = i_grammar;
+        _CreateMapping();
+        _FormTable();
     }
            
     void SetProgramText(String i_program_text)

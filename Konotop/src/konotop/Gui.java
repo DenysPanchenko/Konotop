@@ -344,7 +344,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
        }
        if("parse".equals(e.getActionCommand())){
            program = new String(progTextAreaP2.getText());
-           cParser.SetGrammar(gramP1);
+           cParser.SetGrammar(gramP2);
            cParser.SetProgramText(program);
            boolean result = cParser.Parse();
            if(result)
