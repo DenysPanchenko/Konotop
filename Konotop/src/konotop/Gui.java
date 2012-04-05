@@ -235,11 +235,13 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
 //        fileChooser.setFileFilter(new FFilter(suffixes));
         fileChooser.addActionListener(this);
 
-        program = new String("");
-        //cParser = new CParser(program);
-        
         gramP1 = new Grammar();
         gramP2 = new Grammar();
+        
+        program = new String("");
+        cParser = new CParser(program,gramP1);
+        
+        
         
         parser = new FAParser();
     }
@@ -342,7 +344,8 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
        }
        if("parse".equals(e.getActionCommand())){
            program = new String(progTextAreaP2.getText());
-           cParser = new CParser(program);
+           cParser.SetGrammar(gramP1);
+           cParser.SetProgramText(program);
            boolean result = cParser.Parse();
            if(result)
                textFieldP2.setText("Parsing successfully completed");
