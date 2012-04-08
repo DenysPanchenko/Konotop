@@ -23,13 +23,18 @@ public class CParser {
         else if(m_token.type == Tokenizer.TokType.KWORIDENT 
                 && !(m_key_words.contains(m_token.value)))
             m_token.value = variable_terminal;
+        else if(m_token.type == Tokenizer.TokType.DIRECTIVE)
+            m_token.value = directive_terminal;
     }
     
     public boolean Parse()
     {
         m_token = m_tokenizer.getNextToken();
         _replaceToken();
-        return _ParseNonTerminal(m_grammar.GetBeginTerminal());
+        String begin_non_terminal = m_grammar.GetBeginNonTerminal();
+        if(_NextRule(begin_non_terminal).IsEpsilonRule())
+            return false;
+        return _ParseNonTerminal(begin_non_terminal);
     }
     
     void SetGrammar(Grammar i_grammar)
@@ -196,8 +201,9 @@ public class CParser {
         m_grammar.SetRules(rules);
     }
     
-    private static String numer_terminal = "number";
-    private static String variable_terminal = "variable";
+    private final static String numer_terminal = "number";
+    private final static String variable_terminal = "variable";
+    private final static String directive_terminal = "directive";
     
     private final int m_k = 1;
     private Grammar m_grammar;

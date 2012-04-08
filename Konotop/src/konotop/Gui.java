@@ -267,7 +267,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         list.clear();
         list.add(title);
         list.add("Axiom:");
-        list.add(gram.GetBeginTerminal());
+        list.add(gram.GetBeginNonTerminal());
         list.add("Terminals:");
         for(String s : gram.GetTerminals()){
             list.add(s);
@@ -423,7 +423,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                                need = true;
                        }
                        if(!need)
-                           if(!gramP1.GetBeginTerminal().equals(s))                               
+                           if(!gramP1.GetBeginNonTerminal().equals(s))                               
                                nnTerm.remove(s);
                    }
                    
@@ -436,7 +436,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                                need = true;
                        }
                        if(!need)
-                           if(!gramP1.GetBeginTerminal().equals(r.GetLeftPart()))                               
+                           if(!gramP1.GetBeginNonTerminal().equals(r.GetLeftPart()))                               
                                nnTerm.remove(r.GetLeftPart());
                    
                    gramP1.SetNonTerminals(nnTerm);

@@ -134,7 +134,7 @@ public class FAParser{
                             }
                     
                             if(!nTerm.contains(r.GetLeftPart())){
-                                if(gram.GetBeginTerminal() == null)
+                                if(gram.GetBeginNonTerminal() == null)
                                         gram.SetBeginTerminal(r.GetLeftPart());
                                 nTerm.add(r.GetLeftPart());
                             }

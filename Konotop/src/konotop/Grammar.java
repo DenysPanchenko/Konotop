@@ -248,7 +248,7 @@ public class Grammar {
         m_nonterminals = i_nonterminals;
     }
     
-    public String GetBeginTerminal()
+    public String GetBeginNonTerminal()
     {
         return m_begin_terminal;
     }
