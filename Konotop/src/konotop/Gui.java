@@ -368,8 +368,10 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                         BufferedReader in = new BufferedReader(new InputStreamReader(dstream));
                         StringBuilder sb = new StringBuilder();
                         String t;
-                        while((t = in.readLine()) != null)
+                        while((t = in.readLine()) != null){
                             sb.append(t);
+                            sb.append("\n");
+                        }
                         program = sb.toString();
                         progTextAreaP2.setText(program);
                     }
