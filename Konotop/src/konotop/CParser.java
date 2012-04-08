@@ -23,8 +23,8 @@ public class CParser {
         else if(m_token.type == Tokenizer.TokType.KWORIDENT 
                 && !(m_key_words.contains(m_token.value)))
             m_token.value = variable_terminal;
-        else if(m_token.type == Tokenizer.TokType.DIRECTIVE)
-            m_token.value = directive_terminal;
+        //else if(m_token.type == Tokenizer.TokType.DIRECTIVE)
+          //  m_token.value = directive_terminal;
     }
     
     public boolean Parse()

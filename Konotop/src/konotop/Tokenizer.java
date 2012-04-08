@@ -23,20 +23,20 @@ public class Tokenizer {
     private final static Pattern space = Pattern.compile("\\G\\s+");
     private final static Pattern number = Pattern.compile("\\G(([+-]?0+\\.\\d+\\b)|(\\d+\\.?\\d*[Ee][+-]?\\d+\\b)|([+-]?[1-9]\\d*\\.\\d+\\b)|([+-]?[1-9]\\d*\\b)|(0[xX][A-Fa-f0-9]+\\b)|(0[0-7]*\\b))");
     private final static Pattern kwOrIdent = Pattern.compile("\\G[a-zA-Z_]\\w*");
-    private final static Pattern separator = Pattern.compile("\\G[(){}\\[\\];,\\.]");
+    private final static Pattern separator = Pattern.compile("\\G[#(){}\\[\\];,\\.]");
     private final static Pattern singleOp = Pattern.compile("\\G[=><!~?:+\\-*/&|\\^%]");
     private final static Pattern doubleOp = Pattern.compile("\\G((<=)|(>=)|(==)|(::)|(!=)|(\\|\\|)|"+                                                       "(\\&\\&)|(<<)|(>>)|(--)|(\\+\\+))");
     private final static Pattern assignOp = Pattern.compile("\\G((\\+=)|(-=)|(/=)|(\\*=)|(<<=)|"+                                                      "(>>=)|(\\|=)|(&=)|(\\^=))");
     private final static Pattern literal = Pattern.compile("\\G((\".*?([^\\\\]\"))|(\"\")|('[\\\\]?.?'))");
     private final static Pattern comment = Pattern.compile("\\G((//.*(?m)$)|(/\\*(?s).*?\\*/))");
-    private final static Pattern directive = Pattern.compile("\\G#.*$");
+    //private final static Pattern directive = Pattern.compile("\\G#.*\\b");
     private final static Pattern unknown = Pattern.compile(".+?\\s+");
     
     public enum TokType{
         SPACE(space), UNKNOWN(unknown),
         NUMBER(number),KWORIDENT(kwOrIdent),SEPARATOR(separator),
         SINGLEOP(singleOp),DOUBLEOP(doubleOp),ASSIGNOP(assignOp),
-        LITERAL(literal),COMMENT(comment),DIRECTIVE(directive),
+        LITERAL(literal),COMMENT(comment),/*DIRECTIVE(directive),*/
         END(end);
         
         Pattern pat;
@@ -51,7 +51,7 @@ public class Tokenizer {
     }
     
     static TokType[] patterns = {TokType.END,TokType.SINGLEOP,TokType.NUMBER,TokType.KWORIDENT,TokType.LITERAL,TokType.COMMENT,TokType.ASSIGNOP,
-                                TokType.DOUBLEOP,TokType.SEPARATOR,TokType.DIRECTIVE,TokType.UNKNOWN};
+                                TokType.DOUBLEOP,TokType.SEPARATOR,/*TokType.DIRECTIVE,*/TokType.UNKNOWN};
     
     Token getNextToken(){
         mat.usePattern(space).find();
