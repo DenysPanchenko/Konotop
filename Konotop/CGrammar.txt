@@ -1,8 +1,9 @@
-#Prog# ::= #Function# #Prog# ! #Struct# #Prog# ! #Directive# #Prog# ! $
+#Prog# ::= #Function_Decl# #Prog# ! #Struct# #Prog# ! #Directive# #Prog# ! $
 
-#Directive# ::= directive
+#Directive# ::= \# #Directive_Word#
+#Directive_Word# ::= include < variable > ! define variable #Term# 
 
-#Function# ::= #Type# variable ( #Arg_List# ) #Body_Ext#
+#Function_Decl# ::= #Type# variable ( #Arg_List# ) #Body_Ext#
 #Arg_List# ::= #Arg# #Arg_Ext# ! $
 #Arg_Ext# ::= , #Arg# #Arg_Ext# ! $
 #Arg# ::= #Type# variable
@@ -14,7 +15,8 @@
 #Body#::=#Operator# #Body#!$
 #Operator# ::= #Expression#; ! #Statement#
 #Expression#::= #Creation_Var# ! #Assign_Ex#
-#Statement# ::= #If_State# ! #While_State# ! #For_State#
+#Statement# ::= #If_State# ! #While_State# ! #For_State# ! #Return_State#
+#Return_State# ::= return #Term# ;
 #If_State# ::= if ( #Condition# ) #Body_Ext#
 #While_State# ::= while ( #Condition# ) #Body_Ext#
 #For_State# ::= for ( #Expression# ; #Condition# ; #Expression# ) #Body_Ext#
@@ -26,5 +28,5 @@
 #Arifm_Ex#::=#Term# #Term_Ext# ! ( #Arifm_Ex# )
 #Term_Ext#::=#Operation# #Arifm_Ex# #Term_Ext# ! $
 #Term# ::= number ! variable
-#Operation# ::= + ! - ! / ! * ! < ! > ! >= ! <= ! \!= ! ==
+#Operation# ::= + ! - ! / ! * ! < ! > ! >= ! <= ! \!= ! == 
 #Type# ::= int ! char ! void ! float ! double ! long ! short ! unsigned
