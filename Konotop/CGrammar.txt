@@ -1,0 +1,9 @@
+#Prog#::=int main ( )#Body#
+#Body#::={ #Operator# }
+#Operator#::=#Expression#;#Operator#!$
+#Expression#::=#Arifm_Ex#
+
+#Arifm_Ex#::=#Term##S1#!(#Arifm_Ex#)
+#S1#::=#Operation##Term##S1#!$
+#Term#::=number!variable
+#Operation#::=+!-!/!*

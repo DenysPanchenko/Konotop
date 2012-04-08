@@ -57,9 +57,11 @@ public class CParser {
             }
         }
         for(Rule ext_rule : prog_rules){
-            if(ext_rule.GetRightPart().size()==1 && ext_rule.GetRightPart().get(0).equals(Grammar.epsilon))
+            if(ext_rule.IsEpsilonRule())
+            {
                 rule = ext_rule;
                 return rule;
+            }
         }
         return rule;
     } 
@@ -118,7 +120,12 @@ public class CParser {
         m_table = new HashMap<Rule,HashSet<String>>();
         HashSet<Rule> cur_rules = m_grammar.GetRules();
         for(Rule rule : cur_rules){
-            HashSet<String> set = m_grammar.RuleContext(rule, m_k);
+            HashSet<String> set;
+            if(rule.IsEpsilonRule()){
+                set = new HashSet<String>();
+                //set.add("");
+            } 
+            else set = m_grammar.RuleContext(rule, m_k);
             m_table.put(rule, set);
         }
     }

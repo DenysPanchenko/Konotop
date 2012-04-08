@@ -24,6 +24,12 @@ public class Rule {
         return m_rule;
     }
     
+    public boolean IsEpsilonRule(){
+        if(m_rule.getSecond().size()==1 && m_rule.getSecond().get(0).equals(Grammar.epsilon))
+            return true;
+        else return false;
+    }
+    
     public void SetRule(Pair<String, ArrayList<String>> i_rule)
     {
         m_rule = i_rule;
