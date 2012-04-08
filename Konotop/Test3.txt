@@ -1,0 +1,26 @@
+#include <iosream>
+#include "test.h"
+#define MAX 100
+
+struct hi{
+ int a;
+ float r;
+};
+
+int f () {
+}
+
+struct ho{
+ int p;
+ float q;
+};
+
+void g(int a){
+}
+int main(){  
+for(a = 1; a<6; a=a+1)  {   
+ k=8;  }
+  if(k<8){    
+b = 2+ 2* (3.14 + 5.16);  
+}
+}
