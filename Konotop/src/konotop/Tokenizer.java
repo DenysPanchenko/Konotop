@@ -50,8 +50,8 @@ public class Tokenizer {
         TokType type;
     }
     
-    static TokType[] patterns = {TokType.END,TokType.NUMBER,TokType.KWORIDENT,TokType.LITERAL,TokType.COMMENT,TokType.ASSIGNOP,
-                                TokType.DOUBLEOP,TokType.SINGLEOP,TokType.SEPARATOR,TokType.DIRECTIVE,TokType.UNKNOWN};
+    static TokType[] patterns = {TokType.END,TokType.SINGLEOP,TokType.NUMBER,TokType.KWORIDENT,TokType.LITERAL,TokType.COMMENT,TokType.ASSIGNOP,
+                                TokType.DOUBLEOP,TokType.SEPARATOR,TokType.DIRECTIVE,TokType.UNKNOWN};
     
     Token getNextToken(){
         mat.usePattern(space).find();
