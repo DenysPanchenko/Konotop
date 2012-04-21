@@ -1,5 +1,7 @@
-package konotop;
+package UI;
 
+import core.Grammar;
+import core.Rule;
 import java.awt.List;
 import javax.swing.JMenu;
 import javax.swing.JFrame;
@@ -35,6 +37,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import javax.swing.JOptionPane;
+import parser.CParser;
+import parser.FAParser;
 
 
 public class Gui extends JFrame implements ActionListener, ComponentListener, ItemListener, ChangeListener {
@@ -356,7 +360,17 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            if(result)
                textFieldP2.setText("Parsing successfully completed");
            else
-               textFieldP2.setText("Parsing failed");
+           {
+               String output = "Parsing failed. Wrong lexem - " + cParser.GetWrongLexem();
+               output+=" Expected results:";
+               for(ArrayList<String> terminals : cParser.GetPossibleLexems())
+               {
+                   output+=terminals.get(0);
+                   output+="; ";
+               }
+               output+=" Number of lexem:"+cParser.GetNumOfToken();
+               textFieldP2.setText(output);
+           }
        }
        if("import_prog".equals(e.getActionCommand())){
            int returnVal = fileChooser.showOpenDialog(this);

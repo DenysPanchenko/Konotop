@@ -1,4 +1,4 @@
-package konotop;
+package parser;
 import java.util.regex.*;
 
 public class Tokenizer {

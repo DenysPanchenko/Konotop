@@ -1,4 +1,4 @@
-package konotop;
+package core;
 
     public class Pair<A, B> {
     private A first;
