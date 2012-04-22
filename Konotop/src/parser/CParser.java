@@ -1,5 +1,7 @@
-package konotop;
+package parser;
 
+import core.Grammar;
+import core.Rule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +16,8 @@ public class CParser {
         _CreateMapping();
         _FormTable();
         m_tokenizer = new Tokenizer(programText);
+        m_wrong_lexem = new String();
+        m_possible_lexems = new HashSet<ArrayList<String>>();
     }
     //todo: exclude forming grammar
     
@@ -30,21 +34,39 @@ public class CParser {
     public boolean Parse()
     {
         m_token = m_tokenizer.getNextToken();
+        m_num_of_token = 1;
         _replaceToken();
         String begin_non_terminal = m_grammar.GetBeginNonTerminal();
         if(_NextRule(begin_non_terminal).IsEpsilonRule())
             return false;
-        return _ParseNonTerminal(begin_non_terminal);
+        boolean result = _ParseNonTerminal(begin_non_terminal);
+        if(!result) m_wrong_lexem = m_token.value;
+        return result;
     }
     
-    void SetGrammar(Grammar i_grammar)
+    public int GetNumOfToken()
+    {
+        return m_num_of_token;
+    }
+    
+    public String GetWrongLexem()
+    {
+        return m_wrong_lexem;
+    }
+    
+    public HashSet<ArrayList<String>> GetPossibleLexems()
+    {
+        return m_possible_lexems;
+    }
+    
+    public void SetGrammar(Grammar i_grammar)
     {
         m_grammar = i_grammar;
         _CreateMapping();
         _FormTable();
     }
            
-    void SetProgramText(String i_program_text)
+    public void SetProgramText(String i_program_text)
     {
         m_tokenizer.setText(i_program_text);
     }
@@ -52,9 +74,19 @@ public class CParser {
     private Rule _NextRule(String nonterm){
         HashSet<Rule> prog_rules = m_mapping.get(nonterm);
         Rule rule = new Rule();
+        m_possible_lexems = new HashSet<ArrayList<String>>();
         for(Rule cur_rule : prog_rules)
         {
+            ArrayList<String> terminals = new ArrayList<String>();
             HashSet<String> cur_set = m_table.get(cur_rule);
+            if(cur_set.isEmpty() == false)
+            {
+            for(String terminal : cur_set)
+            {
+                terminals.add(terminal);
+            }
+            m_possible_lexems.add(terminals);
+            }
             if(cur_set.contains(m_token.value))
             {
                 rule = cur_rule;
@@ -81,11 +113,18 @@ public class CParser {
                 
                 if(symbol.equals(m_token.value)){
                     m_token = m_tokenizer.getNextToken();
+                    m_num_of_token++;
                     m_token.value = m_token.value.trim();
                     _replaceToken();
+                    m_possible_lexems.clear();
                 }
                 else
+                {
+                    ArrayList<String> terminals = new ArrayList<String>();
+                    terminals.add(symbol);
+                    m_possible_lexems.add(terminals);
                     return false;
+                }
             }
             else{
                 if(!_ParseNonTerminal(symbol))
@@ -151,55 +190,7 @@ public class CParser {
         }
     }
     
-    //Shit-code here :-)
-    private void _FormGrammar()  
-    {
-        m_grammar = new Grammar();
-        //Begin terminal
-        m_grammar.SetBeginTerminal("Prog");
-        
-        //Non terminals
-        ArrayList<String> non_terminals = new ArrayList<String>();
-        non_terminals.add("Prog"); non_terminals.add("Body"); non_terminals.add("Operator"); 
-        non_terminals.add("Expression");
-        m_grammar.SetNonTerminals(non_terminals);
-        
-        //Terminals
-        ArrayList<String> terminals = new ArrayList<String>();
-        terminals.add("int"); terminals.add("main"); terminals.add("(");
-        terminals.add(")"); terminals.add("{"); terminals.add("}");
-        terminals.add(";"); terminals.add(Grammar.epsilon); terminals.add("var");
-        terminals.add("="); terminals.add("number");
-        m_grammar.SetTerminals(terminals);
-        
-        //Rules
-        HashSet<Rule> rules = new HashSet<Rule>();
-        ArrayList<String> right_part = new ArrayList<String>();
-        right_part.add("int");
-        right_part.add("main");
-        right_part.add("(");
-        right_part.add(")");
-        right_part.add("Body");
-        Rule rule = new Rule("Prog", right_part);
-        rules.add(rule); right_part = new ArrayList<String>();
-        
-        right_part.add("{"); right_part.add("Operator"); right_part.add("}");
-        rule = new Rule("Body", right_part);
-        rules.add(rule); right_part = new ArrayList<String>();
-        
-        right_part.add("Expression"); right_part.add(";"); right_part.add("Operator");
-        rule = new Rule("Operator", right_part);
-        rules.add(rule); right_part = new ArrayList<String>();
-        
-        right_part.add(Grammar.epsilon);
-        rule = new Rule("Operator", right_part);
-        rules.add(rule); right_part = new ArrayList<String>();
-        
-        right_part.add("var"); right_part.add("="); right_part.add("number");
-        rule = new Rule("Expression", right_part);
-        rules.add(rule);
-        m_grammar.SetRules(rules);
-    }
+    
     
     private final static String numer_terminal = "number";
     private final static String variable_terminal = "variable";
@@ -212,4 +203,8 @@ public class CParser {
     private HashMap<Rule,HashSet<String>> m_table;
     private Tokenizer m_tokenizer;
     private Tokenizer.Token m_token;
+    //For error notification
+    private int m_num_of_token;
+    private String m_wrong_lexem;
+    private HashSet<ArrayList<String>> m_possible_lexems;
 }

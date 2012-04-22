@@ -1,12 +1,17 @@
-package konotop;
+package UI;
+
+import parser.Tokenizer;
 
 import java.awt.Color;
+
+import core.Grammar;
+import core.Rule;
+
 import java.awt.List;
 import javax.swing.JMenu;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JMenuBar;
-import javax.swing.JTextArea;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.JTabbedPane;
@@ -35,8 +40,9 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import javax.swing.JTextPane;
 import javax.swing.JOptionPane;
+import parser.CParser;
+import parser.FAParser;
 
 
 public class Gui extends JFrame implements ActionListener, ComponentListener, ItemListener, ChangeListener {
@@ -62,7 +68,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
    
     private Grammar gramP1;
     private Grammar gramP2;
-    private FAParser parser;
+    private FAParser FAparser;
     private CParser cParser;
     private String program;
 
@@ -243,7 +249,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         program = new String("");
         cParser = new CParser(program,gramP2);
         
-        parser = new FAParser();
+        FAparser = new FAParser();
     }
     
     @Override
@@ -333,15 +339,15 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            if(returnVal == JFileChooser.APPROVE_OPTION){
                 File bnfFile = fileChooser.getSelectedFile();
                     try{
-                        parser.clear();
-                        parser.setInputFile(bnfFile);
-                        parser.parseFile();
+                        FAparser.clear();
+                        FAparser.setInputFile(bnfFile);
+                        FAparser.parseFile();
                         if(tabbedPane.getSelectedIndex() == 0){
-                            gramP1 = parser.getGrammar();
+                            gramP1 = FAparser.getGrammar();
                             printGrammar(gramListP1, gramP1, "Grammar is");
                         }
                         if(tabbedPane.getSelectedIndex() == 1){
-                            gramP2 = parser.getGrammar();
+                            gramP2 = FAparser.getGrammar();
                             printGrammar(gramListP2, gramP2, "Grammar is");
                         }
                     }
@@ -358,7 +364,17 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            if(result)
                textFieldP2.setText("Parsing successfully completed");
            else
-               textFieldP2.setText("Parsing failed");
+           {
+               String output = "Parsing failed. Wrong lexem - " + cParser.GetWrongLexem();
+               output+=" Expected results:";
+               for(ArrayList<String> terminals : cParser.GetPossibleLexems())
+               {
+                   output+=terminals.get(0);
+                   output+="; ";
+               }
+               output+=" Number of lexem:"+cParser.GetNumOfToken();
+               textFieldP2.setText(output);
+           }
        }
        if("import_prog".equals(e.getActionCommand())){
            int returnVal = fileChooser.showOpenDialog(this);
@@ -398,7 +414,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                                 progTextPaneP2.append(Color.MAGENTA, curToken.value);
                             else
                             if(curToken.type.equals(Tokenizer.TokType.SPACE))
-                                progTextPaneP2.append(Color.red, curToken.value);
+                                progTextPaneP2.append(Color.white, curToken.value);
                             else
                                 progTextPaneP2.append(Color.black, curToken.value);
                         }while(!curToken.value.isEmpty());
@@ -496,8 +512,8 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                JOptionPane.showMessageDialog(this, "Input string cannot be empty!");
            else{
                try{
-                parser.parseInputString(str);
-                gramP1 = parser.getGrammar();
+                FAparser.parseInputString(str);
+                gramP1 = FAparser.getGrammar();
                 printGrammar(gramListP1, gramP1, "Grammar is:");
                }
                catch(Exception exc){

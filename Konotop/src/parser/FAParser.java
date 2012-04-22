@@ -1,5 +1,8 @@
-package konotop;
+package parser;
 
+import core.Grammar;
+import core.Pair;
+import core.Rule;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.BufferedReader;
