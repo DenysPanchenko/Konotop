@@ -14,6 +14,7 @@ public class CParser {
     
     public CParser(String programText, Grammar grammar){
         m_grammar = grammar;
+        m_key_words = Helpers.FormKeyWords();
         _CreateMapping();
         _FormTable();
         m_tokenizer = new Tokenizer(programText);
@@ -26,7 +27,7 @@ public class CParser {
         if(m_token.type == Tokenizer.TokType.NUMBER)
             m_token.value = numer_terminal;
         else if(m_token.type == Tokenizer.TokType.KWORIDENT 
-                && !(Helpers.IsKeyWord(m_token.value)))
+                && !(m_key_words.contains(m_token.value)))
             m_token.value = variable_terminal;
         //else if(m_token.type == Tokenizer.TokType.DIRECTIVE)
           //  m_token.value = directive_terminal;
@@ -187,6 +188,7 @@ public class CParser {
     private Grammar m_grammar;
     private HashMap<String,HashSet<Rule>> m_mapping;
     private HashMap<Rule,HashSet<String>> m_table;
+    private ArrayList<String> m_key_words;
     private Tokenizer m_tokenizer;
     private Tokenizer.Token m_token;
     //For error notification

@@ -73,13 +73,7 @@ public class Helpers {
         return difference;
     }
     
-    public static boolean IsKeyWord(String i_string)
-    {
-    ArrayList<String>key_words = FormKeyWords();
-    return key_words.contains(i_string);
-    }
-    
-    private static ArrayList<String> FormKeyWords()
+    public static ArrayList<String> FormKeyWords()
     {
         ArrayList<String> key_words = new ArrayList<String>();
         try
