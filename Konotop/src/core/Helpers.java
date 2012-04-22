@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Scanner;
+import java.io.File;
 
 public class Helpers {
     static boolean tablesAreEquals(HashMap<String,HashSet<ArrayList<String>>> prev,HashMap<String,HashSet<ArrayList<String>>> cur ){
@@ -69,5 +71,28 @@ public class Helpers {
             }
         }
         return difference;
+    }
+    
+    public static boolean IsKeyWord(String i_string)
+    {
+    ArrayList<String>key_words = FormKeyWords();
+    return key_words.contains(i_string);
+    }
+    
+    private static ArrayList<String> FormKeyWords()
+    {
+        ArrayList<String> key_words = new ArrayList<String>();
+        try
+        {
+            Scanner sc = new Scanner(new File("KeyWords.txt"));
+            while(sc.hasNext())
+            {
+                key_words.add(sc.next());
+            }
+        }
+        catch(Exception e)
+        {
+        }
+        return key_words;
     }
 }

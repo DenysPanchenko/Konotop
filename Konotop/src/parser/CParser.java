@@ -2,17 +2,18 @@ package parser;
 
 import core.Grammar;
 import core.Rule;
+import core.Helpers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.io.File;
+import sun.nio.cs.ext.ISO2022_KR;
 
 public class CParser {
     
     public CParser(String programText, Grammar grammar){
         m_grammar = grammar;
-        _FormKeyWords();
         _CreateMapping();
         _FormTable();
         m_tokenizer = new Tokenizer(programText);
@@ -25,7 +26,7 @@ public class CParser {
         if(m_token.type == Tokenizer.TokType.NUMBER)
             m_token.value = numer_terminal;
         else if(m_token.type == Tokenizer.TokType.KWORIDENT 
-                && !(m_key_words.contains(m_token.value)))
+                && !(Helpers.IsKeyWord(m_token.value)))
             m_token.value = variable_terminal;
         //else if(m_token.type == Tokenizer.TokType.DIRECTIVE)
           //  m_token.value = directive_terminal;
@@ -177,24 +178,6 @@ public class CParser {
             m_table.put(rule, set);
         }
     }
-
-    private void _FormKeyWords()
-    {
-        m_key_words = new ArrayList<String>();
-        try
-        {
-            Scanner sc = new Scanner(new File("KeyWords.txt"));
-            while(sc.hasNext())
-            {
-                m_key_words.add(sc.next());
-            }
-        }
-        catch(Exception e)
-        {
-        }
-    }
-    
-    
     
     private final static String numer_terminal = "number";
     private final static String variable_terminal = "variable";
@@ -202,7 +185,6 @@ public class CParser {
     
     private final int m_k = 1;
     private Grammar m_grammar;
-    private ArrayList<String> m_key_words;
     private HashMap<String,HashSet<Rule>> m_mapping;
     private HashMap<Rule,HashSet<String>> m_table;
     private Tokenizer m_tokenizer;
