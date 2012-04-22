@@ -5,6 +5,7 @@ import parser.Tokenizer;
 import java.awt.Color;
 
 import core.Grammar;
+import core.Helpers;
 import core.Rule;
 
 import java.awt.List;
@@ -38,6 +39,7 @@ import java.awt.event.ItemListener;
 
 import java.io.File;
 
+import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import javax.swing.JOptionPane;
@@ -71,6 +73,10 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
     private FAParser FAparser;
     private CParser cParser;
     private String program;
+    private Timer timer;
+    
+    private int errorPos;
+    private ArrayList<String> keywords;
 
     public Gui() {
         
@@ -235,7 +241,12 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         pack();
         setVisible(true);
         this.addComponentListener(this);
-
+        
+        errorPos = -1;
+        timer = new Timer(750,this);
+        timer.setActionCommand("time_out");
+        timer.start();
+        
         fileChooser = new JFileChooser();
         ArrayList<String> suffixes = new ArrayList<String>();
         suffixes.add(".txt");
@@ -349,6 +360,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                         if(tabbedPane.getSelectedIndex() == 1){
                             gramP2 = FAparser.getGrammar();
                             printGrammar(gramListP2, gramP2, "Grammar is");
+                            keywords = Helpers.FormKeyWords();
                         }
                     }
                     catch(Exception exc){
@@ -361,18 +373,19 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            cParser.SetGrammar(gramP2);
            cParser.SetProgramText(program);
            boolean result = cParser.Parse();
-           if(result)
+           if(result){
                textFieldP2.setText("Parsing successfully completed");
-           else
-           {
+               errorPos = -1;
+           }
+           else{
                String output = "Parsing failed. Wrong lexem - " + cParser.GetWrongLexem();
-               output+=" Expected results:";
-               for(ArrayList<String> terminals : cParser.GetPossibleLexems())
-               {
-                   output+=terminals.get(0);
-                   output+="; ";
+               output += " Expected results:";
+               for(ArrayList<String> terminals : cParser.GetPossibleLexems()){
+                   output += terminals.get(0);
+                   output += "; ";
                }
-               output+=" Number of lexem:"+cParser.GetNumOfToken();
+               output += " Number of lexem:"+cParser.GetNumOfToken();
+               errorPos = cParser.GetNumOfToken();
                textFieldP2.setText(output);
            }
        }
@@ -401,11 +414,15 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                             if(curToken.type.equals(Tokenizer.TokType.LITERAL))
                                 progTextPaneP2.append(Color.CYAN, curToken.value);
                             else
-                            if(curToken.type.equals(Tokenizer.TokType.KWORIDENT))
-                                progTextPaneP2.append(Color.blue, curToken.value);
+                            if(curToken.type.equals(Tokenizer.TokType.KWORIDENT)){
+                                if(keywords.indexOf(curToken.value) != -1)
+                                    progTextPaneP2.append(Color.BLUE, curToken.value);
+                                else
+                                    progTextPaneP2.append(Color.GREEN, curToken.value);
+                            }
                             else
                             if(curToken.type.equals(Tokenizer.TokType.ASSIGNOP))
-                                progTextPaneP2.append(Color.black, curToken.value);
+                                progTextPaneP2.append(Color.ORANGE, curToken.value);
                             else
                             if(curToken.type.equals(Tokenizer.TokType.COMMENT))
                                 progTextPaneP2.append(Color.gray, curToken.value);
@@ -563,6 +580,55 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                catch(Exception exc){
                    JOptionPane.showMessageDialog(rootPane, exc.toString());
                }
+       }
+       if("time_out".equals(e.getActionCommand())){
+           program = progTextPaneP2.getText();
+           int pos = progTextPaneP2.getCaretPosition();
+           progTextPaneP2.setText("");
+           
+           Tokenizer tok = new Tokenizer(program);
+           Tokenizer.Token curToken;
+           int p = 0;
+           do{
+               curToken = tok.getNextToken();
+               if(errorPos - 1 == p){
+                   progTextPaneP2.append(Color.RED, curToken.value);
+                   continue;
+               }
+               else
+                   ++p;
+               if(curToken.type.equals(Tokenizer.TokType.ASSIGNOP))
+                   progTextPaneP2.append(Color.PINK, curToken.value);
+               else
+               if(curToken.type.equals(Tokenizer.TokType.DOUBLEOP))
+                   progTextPaneP2.append(Color.ORANGE, curToken.value);
+               else
+               if(curToken.type.equals(Tokenizer.TokType.UNKNOWN))
+                   progTextPaneP2.append(Color.red, curToken.value);
+               else
+               if(curToken.type.equals(Tokenizer.TokType.LITERAL))
+                   progTextPaneP2.append(Color.CYAN, curToken.value);
+               else
+               if(curToken.type.equals(Tokenizer.TokType.KWORIDENT)){
+                   if(keywords.indexOf(curToken.value) != -1)
+                       progTextPaneP2.append(Color.BLUE, curToken.value);
+                   else
+                       progTextPaneP2.append(Color.GREEN, curToken.value);
+               }
+               else
+               if(curToken.type.equals(Tokenizer.TokType.COMMENT))
+                   progTextPaneP2.append(Color.gray, curToken.value);
+               else
+               if(curToken.type.equals(Tokenizer.TokType.NUMBER))
+                   progTextPaneP2.append(Color.MAGENTA, curToken.value);
+               else
+               if(curToken.type.equals(Tokenizer.TokType.SPACE))
+                   progTextPaneP2.append(Color.white, curToken.value);
+               else
+                   progTextPaneP2.append(Color.black, curToken.value);
+               }while(!curToken.value.isEmpty());
+           //if(pos > progTextPaneP2.getText().length())
+            progTextPaneP2.setCaretPosition(pos);
        }
     }
 }
