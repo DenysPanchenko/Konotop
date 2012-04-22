@@ -11,11 +11,11 @@ public class Tokenizer {
         curPosition=0;
     }
     
-    Tokenizer(){
+    public Tokenizer(){
  
     }
     
-    Tokenizer(String text){
+    public Tokenizer(String text){
         mat=unknown.matcher(text);
     }
     
@@ -53,7 +53,7 @@ public class Tokenizer {
     static TokType[] patterns = {TokType.SPACE, TokType.END,TokType.SINGLEOP,TokType.NUMBER,TokType.KWORIDENT,TokType.LITERAL,TokType.COMMENT,TokType.ASSIGNOP,
                                 TokType.DOUBLEOP,TokType.SEPARATOR,/*TokType.DIRECTIVE,*/TokType.UNKNOWN};
     
-    Token getNextToken(){
+    public Token getNextToken(){
         //mat.usePattern(space).find();
         Token curToken = new Token();
         curToken.type = TokType.UNKNOWN;
