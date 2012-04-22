@@ -114,6 +114,10 @@ public class CParser {
                 if(symbol.equals(m_token.value)){
                     m_token = m_tokenizer.getNextToken();
                     m_num_of_token++;
+                    while(m_token.type.equals(Tokenizer.TokType.SPACE))
+                    {    m_token = m_tokenizer.getNextToken();
+                        m_num_of_token++;
+                    }
                     m_token.value = m_token.value.trim();
                     _replaceToken();
                     m_possible_lexems.clear();
