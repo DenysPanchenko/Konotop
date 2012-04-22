@@ -50,11 +50,11 @@ public class Tokenizer {
         TokType type;
     }
     
-    static TokType[] patterns = {TokType.END,TokType.SINGLEOP,TokType.NUMBER,TokType.KWORIDENT,TokType.LITERAL,TokType.COMMENT,TokType.ASSIGNOP,
+    static TokType[] patterns = {TokType.SPACE, TokType.END,TokType.SINGLEOP,TokType.NUMBER,TokType.KWORIDENT,TokType.LITERAL,TokType.COMMENT,TokType.ASSIGNOP,
                                 TokType.DOUBLEOP,TokType.SEPARATOR,/*TokType.DIRECTIVE,*/TokType.UNKNOWN};
     
     Token getNextToken(){
-        mat.usePattern(space).find();
+        //mat.usePattern(space).find();
         Token curToken = new Token();
         curToken.type = TokType.UNKNOWN;
         curToken.value = "";
@@ -67,7 +67,7 @@ public class Tokenizer {
             } 
        }
        mat.region(curPosition, mat.regionEnd());
-       mat.usePattern(space).find();
+       //mat.usePattern(space).find();
        if(mat.usePattern(unknown).find()){
             curToken.value = mat.group();
             curToken.type = TokType.UNKNOWN;
