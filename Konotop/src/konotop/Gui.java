@@ -1,5 +1,6 @@
 package konotop;
 
+import java.awt.Color;
 import java.awt.List;
 import javax.swing.JMenu;
 import javax.swing.JFrame;
@@ -34,6 +35,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import javax.swing.JTextPane;
 import javax.swing.JOptionPane;
 
 
@@ -50,13 +52,13 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
     private JButton             delButtonP1;
     private JFormattedTextField inputP1;
     
-    private GroupLayout layoutP2;
-    private JPanel      panel2;
-    private List        gramListP2;
-    private JTextArea   progTextAreaP2;
-    private JTextField  textFieldP2;
-    private JScrollPane scrollPaneP2;
-    private JButton     runParseP2;
+    private GroupLayout   layoutP2;
+    private JPanel        panel2;
+    private List          gramListP2;
+    private ColorTextPane progTextPaneP2;
+    private JTextField    textFieldP2;
+    private JScrollPane   scrollPaneP2;
+    private JButton       runParseP2;
    
     private Grammar gramP1;
     private Grammar gramP2;
@@ -178,9 +180,9 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
         textFieldP2 = new JTextField();
         textFieldP2.setEditable(false);
         
-        progTextAreaP2 = new JTextArea();
-        progTextAreaP2.setWrapStyleWord(true);
-        scrollPaneP2 = new JScrollPane(progTextAreaP2);
+        progTextPaneP2 = new ColorTextPane();
+        //progTextPaneP2.setWrapStyleWord(true);
+        scrollPaneP2 = new JScrollPane(progTextPaneP2);
         
         runParseP2 = new JButton("Parse");
         runParseP2.setActionCommand("parse");
@@ -349,7 +351,7 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
            }
        }
        if("parse".equals(e.getActionCommand())){
-           program = new String(progTextAreaP2.getText());
+           program = new String(progTextPaneP2.getText());
            cParser.SetGrammar(gramP2);
            cParser.SetProgramText(program);
            boolean result = cParser.Parse();
@@ -373,7 +375,33 @@ public class Gui extends JFrame implements ActionListener, ComponentListener, It
                             sb.append("\n");
                         }
                         program = sb.toString();
-                        progTextAreaP2.setText(program);
+                        Tokenizer tok = new Tokenizer(program);
+                        Tokenizer.Token curToken;
+                        do{
+                            curToken = tok.getNextToken();
+                            if(curToken.type.equals(Tokenizer.TokType.UNKNOWN))
+                                progTextPaneP2.append(Color.red, curToken.value);
+                            else
+                            if(curToken.type.equals(Tokenizer.TokType.LITERAL))
+                                progTextPaneP2.append(Color.CYAN, curToken.value);
+                            else
+                            if(curToken.type.equals(Tokenizer.TokType.KWORIDENT))
+                                progTextPaneP2.append(Color.blue, curToken.value);
+                            else
+                            if(curToken.type.equals(Tokenizer.TokType.ASSIGNOP))
+                                progTextPaneP2.append(Color.black, curToken.value);
+                            else
+                            if(curToken.type.equals(Tokenizer.TokType.COMMENT))
+                                progTextPaneP2.append(Color.gray, curToken.value);
+                            else
+                            if(curToken.type.equals(Tokenizer.TokType.NUMBER))
+                                progTextPaneP2.append(Color.MAGENTA, curToken.value);
+                            else
+                            if(curToken.type.equals(Tokenizer.TokType.SPACE))
+                                progTextPaneP2.append(Color.red, curToken.value);
+                            else
+                                progTextPaneP2.append(Color.black, curToken.value);
+                        }while(!curToken.value.isEmpty());
                     }
                     catch(Exception exc){
                         JOptionPane.showMessageDialog(rootPane, exc.toString());
